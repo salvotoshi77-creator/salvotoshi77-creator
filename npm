@@ -1,0 +1,63 @@
+apply plugin: 'nodejs'
+  sources {
+    main {
+        javaScript {
+            srcDir "src/main/javascript"
+        }
+    }
+}
+  model {
+    nodeModules {
+        main {
+            source sources.main.javascript
+            source sources.main
+                  // Fetch dependencies from Npm repository
+            dependencies {
+                runtime library: 'colors', version: '*'
+                runtime library: 'flatiron', version: '0.1.x'
+                runtime library: 'optimist', version: '0.2.x'
+                runtime library: 'union', version: '0.1.x'
+                runtime library: 'ecstatic', version: '0.1.x'
+                runtime library: 'plates', url: 'https://github.com/flatiron/plates/tarball/master'
+                development library: 'vows', version: '0.5.x'
+                development library: 'request', version: '2.1.x'
+                bundled library: 'union'
+                bundled library: 'ecstatic'
+            }
+        }
+    }
+      testSuites {
+        mainTest(QUnit) {
+            // Same underlying object as the one from nodeModules meaning you also get depenencies and source
+        }
+    }
+}
+  apply plugin: 'npm-publish'
+  publishing {
+    publications {
+        create('http-server', NpmPublication) {
+            from nodeModules.main
+              description = "a simple zero-configuration command-line http server"
+            revision "0.3.0"
+              // The following parameter could be all replace by the withJson hook as
+            // Gradle would most likely have no value to understand those values.
+            analyze false
+            preferGlobal true
+            license 'MIT'
+            keywords ['cli', 'http', 'server']
+            contributors {
+                contributor name:"Marak Squires", email: "marak@nodejitsu.com"
+                //or contributor "Marak Squires <marak@nodejitsu.com>"
+            }
+            homepage 'http://bob.org/'
+            bugs url: 'http://github.com/owner/project/issues', email: 'project@hostname.com'
+            author name: 'Barney Rubble', email: 'b@rubble.com', url: 'http://barnyrubble.tumblr.com/'
+            //or author "Barney Rubble <b@rubble.com> (http://barnyrubble.tumblr.com/)"
+            main "./lib/bob"
+            engines node: '>=0.6'
+                descriptor.withJson {
+                // A lot like withXml and use the Groovy Json parser
+            }
+        }
+    }
+}
